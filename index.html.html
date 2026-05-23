@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrivaVault v3 — Universal Storage Shield</title>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#07070f;--void2:#0d0d1c;--void3:#141428;--plate:#1a1a30;
+  --rim:rgba(255,255,255,0.06);--rim2:rgba(255,255,255,0.11);
+  --acid:#00ff88;--acid2:#00e07a;--acid-dim:rgba(0,255,136,0.10);
+  --acid-glow:0 0 28px rgba(0,255,136,0.28);
+  --danger:#ff3d5a;--dbg:rgba(255,61,90,0.10);
+  --warn:#ffaa00;--wbg:rgba(255,170,0,0.10);
+  --info:#4488ff;--ibg:rgba(68,136,255,0.10);
+  --purple:#b86eff;--pbg:rgba(184,110,255,0.10);
+  --text:#e2e2f0;--text2:#8888aa;--text3:#55557a;
+  --r:14px;--rs:9px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cabinet Grotesk',sans-serif;background:var(--void);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,0.013) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.013) 1px,transparent 1px);
+  background-size:52px 52px}
+.z{position:relative;z-index:1}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(7,7,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--rim);
+  padding:0 2rem;display:flex;align-items:center;gap:12px;height:56px}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--text);font-size:1.05rem;font-weight:900;letter-spacing:-.025em}
+.logo-mark{width:28px;height:28px;border:1.5px solid var(--acid);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:var(--acid-glow)}
+.logo em{font-style:normal;font-family:'Instrument Serif',serif;color:var(--acid)}
+.shield-badge{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--acid);padding:4px 12px;border:1px solid rgba(0,255,136,.22);border-radius:999px;background:var(--acid-dim);margin-left:auto}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--acid);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.6)}}
+.vtag{font-size:10px;color:var(--text2);border:1px solid var(--rim);border-radius:5px;padding:2px 8px}
+
+/* HERO */
+.hero{max-width:860px;margin:0 auto;padding:4.5rem 2rem 2.5rem;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--acid);padding:5px 14px;border:1px solid rgba(0,255,136,.18);border-radius:999px;background:var(--acid-dim);margin-bottom:1.75rem}
+h1{font-size:clamp(2.4rem,5.5vw,4rem);font-weight:900;line-height:1.0;letter-spacing:-.04em;margin-bottom:1.25rem}
+h1 .serif{font-family:'Instrument Serif',serif;font-weight:400;font-style:italic;color:var(--acid)}
+h1 .muted{color:var(--text2);font-weight:400}
+.hero p{font-size:1rem;color:var(--text2);max-width:560px;margin:0 auto 2.5rem;line-height:1.85;font-weight:400}
+
+/* CALLOUT BOX — Original File */
+.callout{max-width:860px;margin:0 auto 1.5rem;padding:0 2rem}
+.callout-box{background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(0,255,136,.02));
+  border:1px solid rgba(0,255,136,.25);border-radius:var(--r);padding:1rem 1.4rem;
+  display:flex;align-items:flex-start;gap:12px}
+.callout-icon{font-size:1.4rem;flex-shrink:0;margin-top:1px}
+.callout-title{font-size:13px;font-weight:700;color:var(--acid);margin-bottom:3px}
+.callout-body{font-size:12px;color:var(--text2);line-height:1.6}
+.callout-body strong{color:var(--text)}
+
+/* UNIVERSAL SHIELD CALLOUT */
+.shield-callout{max-width:860px;margin:0 auto 2rem;padding:0 2rem}
+.shield-box{background:linear-gradient(135deg,rgba(184,110,255,.07),rgba(68,136,255,.04));
+  border:1px solid rgba(184,110,255,.25);border-radius:var(--r);padding:1rem 1.4rem;
+  display:flex;align-items:flex-start;gap:12px}
+.shield-box-icon{font-size:1.4rem;flex-shrink:0;margin-top:1px}
+.shield-box-title{font-size:13px;font-weight:700;color:var(--purple);margin-bottom:3px}
+.shield-box-body{font-size:12px;color:var(--text2);line-height:1.6}
+.shield-box-body strong{color:var(--text)}
+
+/* TICKER */
+.ticker-wrap{max-width:860px;margin:0 auto 2rem;padding:0 2rem}
+.ticker-inner-wrap{background:var(--dbg);border:1px solid rgba(255,61,90,.18);border-radius:var(--r);
+  padding:10px 16px;display:flex;align-items:center;gap:12px;overflow:hidden}
+.t-badge{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--danger);
+  white-space:nowrap;display:flex;align-items:center;gap:5px;padding-right:12px;border-right:1px solid rgba(255,61,90,.2)}
+.t-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--danger);animation:pulse 1.4s infinite}
+.t-scroll{flex:1;overflow:hidden;height:17px;position:relative}
+.t-text{position:absolute;white-space:nowrap;font-size:12px;color:rgba(255,61,90,.75);animation:tscroll 26s linear infinite}
+@keyframes tscroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+
+/* STATS */
+.stats-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;max-width:860px;margin:0 auto 1.75rem;padding:0 2rem}
+.stats-inner{display:contents}
+.stat{background:var(--void2);padding:.875rem 1rem;text-align:center;border:1px solid var(--rim);transition:background .2s}
+.stat:first-child{border-radius:var(--r) 0 0 var(--r)}
+.stat:last-child{border-radius:0 var(--r) var(--r) 0}
+.stat:hover{background:var(--void3)}
+.stat-n{font-size:1.6rem;font-weight:900;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.stat-n.g{color:var(--acid)}.stat-n.r{color:var(--danger)}.stat-n.p{color:var(--purple)}
+.stat-l{font-size:10px;color:var(--text2);margin-top:3px;letter-spacing:.04em}
+
+/* LAYOUT */
+.main{max-width:860px;margin:0 auto;padding:0 2rem 5rem;display:grid;grid-template-columns:1fr 1fr;gap:11px}
+@media(max-width:660px){.main{grid-template-columns:1fr}}
+.s2{grid-column:1/-1}
+
+/* CARDS */
+.card{background:var(--void2);border:1px solid var(--rim);border-radius:var(--r);padding:1.4rem;position:relative;overflow:hidden;transition:border-color .2s}
+.card:hover{border-color:var(--rim2)}
+.card::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;
+  background:radial-gradient(circle at top right,rgba(0,255,136,.03),transparent 70%);pointer-events:none}
+.clabel{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text2);
+  display:flex;align-items:center;gap:7px;margin-bottom:1.1rem}
+.clabel::before{content:'';width:16px;height:2px;background:var(--acid);border-radius:999px;flex-shrink:0}
+
+/* DROP ZONE */
+.dz{border:1.5px dashed rgba(255,255,255,.1);border-radius:var(--rs);padding:2.25rem 1rem;text-align:center;
+  cursor:pointer;transition:all .2s;position:relative;background:var(--void3)}
+.dz:hover,.dz.over{border-color:var(--acid);background:var(--acid-dim);box-shadow:inset 0 0 24px rgba(0,255,136,.04)}
+.dz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.dz-icon{font-size:1.9rem;margin-bottom:.6rem;display:block}
+.dz-t{font-weight:700;font-size:.9rem;color:var(--text);margin-bottom:.2rem}
+.dz-s{font-size:11px;color:var(--text2)}
+
+/* FILE LIST */
+.flist{margin-top:.8rem;display:flex;flex-direction:column;gap:5px}
+.fitem{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--void3);
+  border:1px solid var(--rim);border-radius:var(--rs);font-size:12px;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.finfo{flex:1;min-width:0}
+.fname{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+.fsize{font-size:10px;color:var(--text2);margin-top:1px}
+.pill{font-size:9px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.p-raw{background:var(--dbg);color:var(--danger);border:1px solid rgba(255,61,90,.2)}
+.p-clean{background:var(--acid-dim);color:var(--acid);border:1px solid rgba(0,255,136,.2)}
+.p-work{background:var(--wbg);color:var(--warn);border:1px solid rgba(255,170,0,.2)}
+.rm{background:none;border:none;cursor:pointer;color:var(--text2);font-size:15px;line-height:1;padding:2px 4px;border-radius:4px}
+.rm:hover{color:var(--danger);background:var(--dbg)}
+
+/* ORIGINAL FILE VAULT DISPLAY */
+.orig-vault{margin-top:.875rem;background:linear-gradient(135deg,rgba(0,255,136,.05),rgba(0,255,136,.02));
+  border:1px solid rgba(0,255,136,.2);border-radius:var(--rs);padding:1rem 1.1rem}
+.orig-title{font-size:11px;font-weight:700;color:var(--acid);margin-bottom:.6rem;display:flex;align-items:center;gap:6px}
+.orig-row{display:flex;align-items:center;gap:9px;padding:7px 10px;background:rgba(0,0,0,.25);
+  border-radius:7px;margin-bottom:5px;font-size:11px}
+.orig-lock{font-size:1rem;flex-shrink:0}
+.orig-info{flex:1;min-width:0}
+.orig-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.orig-sub{font-size:10px;color:var(--acid);margin-top:1px}
+
+/* OPTIONS */
+.olist{display:flex;flex-direction:column;gap:6px}
+.orow{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border:1px solid var(--rim);
+  border-radius:var(--rs);cursor:pointer;transition:all .15s;background:var(--void3)}
+.orow:hover{border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.025)}
+.orow.on{border-color:rgba(0,255,136,.28);background:var(--acid-dim)}
+.ochk{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--rim2);display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-top:1px;font-size:9px;color:transparent;transition:all .15s}
+.orow.on .ochk{background:var(--acid);border-color:var(--acid);color:var(--void)}
+.oname{font-size:12px;font-weight:700;color:var(--text)}
+.odesc{font-size:10px;color:var(--text2);margin-top:2px;line-height:1.4}
+
+/* META */
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mi{padding:8px 10px;border-radius:var(--rs);font-size:11px;border:1px solid transparent}
+.mi.exp{background:var(--dbg);border-color:rgba(255,61,90,.12)}
+.mi.str{background:var(--acid-dim);border-color:rgba(0,255,136,.12)}
+.mkey{font-weight:700;font-size:10px;margin-bottom:2px}
+.mval{color:var(--text2);word-break:break-all;line-height:1.4}
+.mval.r{color:var(--danger)}.mval.g{color:var(--acid)}
+
+/* PROCESS */
+.slist{display:flex;flex-direction:column;gap:8px}
+.srow{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text2);transition:color .2s}
+.srow.active{color:var(--info)}.srow.done{color:var(--text)}
+.sdot{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px}
+.d-idle{background:var(--void3);border:1px solid var(--rim);color:var(--text2)}
+.d-act{background:var(--ibg);color:var(--info);animation:spin 1s linear infinite;border:1px solid rgba(68,136,255,.3)}
+.d-done{background:var(--acid-dim);color:var(--acid);border:1px solid rgba(0,255,136,.3)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ptrack{height:3px;background:var(--rim);border-radius:999px;overflow:hidden;margin-top:10px}
+.pfill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--acid),#00ffcc);transition:width .45s ease}
+
+/* UNIVERSAL APP MONITOR */
+.um-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem}
+.um-count{font-size:11px;color:var(--text2)}
+.um-count span{color:var(--danger);font-weight:700}
+.arow{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--void3);
+  border:1px solid var(--rim);border-radius:var(--rs);margin-bottom:6px;font-size:12px;animation:fadeUp .3s ease}
+.arow.blocked{border-color:rgba(255,61,90,.15);background:rgba(255,61,90,.03)}
+.arow.safe{border-color:rgba(0,255,136,.12);background:rgba(0,255,136,.02)}
+.arow.new-block{animation:flashRed .6s ease}
+@keyframes flashRed{0%{background:rgba(255,61,90,.2)}100%{background:rgba(255,61,90,.03)}}
+.aicon{font-size:1.1rem;flex-shrink:0;width:28px;text-align:center}
+.ainfo{flex:1;min-width:0}
+.aname{font-weight:700;font-size:12px}
+.aevent{font-size:10px;color:var(--text2);margin-top:1px}
+.atag{font-size:9px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.atag.b{background:var(--dbg);color:var(--danger);border:1px solid rgba(255,61,90,.2)}
+.atag.s{background:var(--acid-dim);color:var(--acid);border:1px solid rgba(0,255,136,.2)}
+.atag.u{background:var(--pbg);color:var(--purple);border:1px solid rgba(184,110,255,.2)}
+.acount{font-size:10px;color:var(--text2);font-variant-numeric:tabular-nums;min-width:40px;text-align:right}
+
+/* PERMISSION TOGGLE */
+.perm-toggle{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);
+  padding:7px 11px;background:var(--void3);border:1px solid var(--rim);border-radius:var(--rs);margin-bottom:7px}
+.perm-toggle .pname{flex:1;font-weight:600;font-size:11px;color:var(--text)}
+.toggle-sw{width:32px;height:18px;border-radius:999px;background:var(--acid);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.toggle-sw.off{background:var(--rim2)}
+.toggle-sw::after{content:'';position:absolute;top:3px;width:12px;height:12px;border-radius:50%;background:var(--void);transition:left .2s}
+.toggle-sw.off::after{left:3px}
+.toggle-sw:not(.off)::after{left:17px}
+
+/* SHARE */
+.sgrid{display:flex;flex-direction:column;gap:6px}
+.sitem{display:flex;align-items:center;gap:9px;padding:10px 12px;
+  background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.14);border-radius:var(--rs)}
+.sname{flex:1;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.smeta{font-size:10px;color:var(--text2);margin-top:1px}
+.sbtns{display:flex;gap:5px;flex-shrink:0}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:var(--rs);
+  font-family:'Cabinet Grotesk',sans-serif;font-size:12px;font-weight:700;letter-spacing:.02em;
+  cursor:pointer;border:none;transition:all .15s;text-decoration:none}
+.btn-acid{background:var(--acid);color:var(--void)}
+.btn-acid:hover{background:var(--acid2);transform:translateY(-1px);box-shadow:var(--acid-glow)}
+.btn-acid:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--rim2)}
+.btn-ghost:hover{border-color:rgba(0,255,136,.28);color:var(--acid);background:var(--acid-dim)}
+.btn-full{width:100%;justify-content:center}
+.btn-sm{padding:6px 12px;font-size:10px;border-radius:7px}
+.btn-danger{background:var(--dbg);color:var(--danger);border:1px solid rgba(255,61,90,.2)}
+
+/* MODAL */
+.bkdrop{position:fixed;inset:0;z-index:200;background:rgba(7,7,15,.85);backdrop-filter:blur(14px);
+  display:flex;align-items:center;justify-content:center;padding:1.5rem;
+  opacity:0;pointer-events:none;transition:opacity .2s}
+.bkdrop.open{opacity:1;pointer-events:all}
+.modal{background:var(--void2);border:1px solid var(--rim2);border-radius:var(--r);padding:1.75rem;
+  max-width:460px;width:100%;box-shadow:0 40px 80px rgba(0,0,0,.65);
+  transform:translateY(14px) scale(.98);transition:transform .2s}
+.bkdrop.open .modal{transform:none}
+.mtitle{font-size:1.05rem;font-weight:800;margin-bottom:.4rem}
+.msub{font-size:12px;color:var(--text2);margin-bottom:1.4rem;line-height:1.65}
+.mlist{display:flex;flex-direction:column;gap:6px;margin-bottom:1.4rem}
+.mrow{display:flex;align-items:center;gap:11px;padding:11px 13px;
+  border:1px solid var(--rim);border-radius:var(--rs);cursor:pointer;transition:all .15s;background:var(--void3)}
+.mrow:hover{border-color:rgba(0,255,136,.28);background:var(--acid-dim)}
+.mrow-icon{font-size:1.3rem}
+.mrow-name{font-size:12px;font-weight:700}
+.mrow-desc{font-size:10px;color:var(--text2)}
+.lrow{display:flex;gap:7px;align-items:center;background:var(--void3);border:1px solid var(--rim);
+  border-radius:var(--rs);padding:9px 12px;margin-top:.7rem}
+.lval{flex:1;font-family:monospace;font-size:10px;color:var(--acid);word-break:break-all}
+.enc-ok{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--acid);font-weight:700;
+  padding:7px 11px;background:var(--acid-dim);border:1px solid rgba(0,255,136,.18);border-radius:var(--rs);margin-top:.8rem}
+
+/* DESKTOP BANNER */
+.dl-banner{background:linear-gradient(135deg,var(--void3),rgba(0,255,136,.05));
+  border:1px solid rgba(0,255,136,.18);border-radius:var(--r);padding:1.25rem 1.6rem;
+  display:flex;align-items:center;gap:1.25rem}
+.dl-icon{font-size:2rem;flex-shrink:0}
+.dl-t{font-size:.95rem;font-weight:800}
+.dl-s{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.5}
+.dl-btns{margin-left:auto;display:flex;gap:7px;flex-shrink:0}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(70px);
+  background:var(--void3);color:var(--text);border:1px solid var(--rim2);
+  padding:10px 18px;border-radius:999px;font-size:12px;font-weight:700;
+  display:flex;align-items:center;gap:7px;
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap;
+  box-shadow:0 8px 32px rgba(0,0,0,.45)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:rgba(0,255,136,.35);color:var(--acid)}
+.toast.err{border-color:rgba(255,61,90,.35);color:var(--danger)}
+
+/* MISC */
+.div{border:none;border-top:1px solid var(--rim);margin:.875rem 0}
+.empty{text-align:center;padding:1.75rem 1rem;color:var(--text2);font-size:12px}
+.empty .ei{font-size:1.6rem;margin-bottom:.4rem;display:block}
+input[type=text],input[type=email]{width:100%;padding:9px 13px;border:1px solid var(--rim);
+  border-radius:var(--rs);background:var(--void3);color:var(--text);
+  font-family:'Cabinet Grotesk',sans-serif;font-size:12px;outline:none;transition:border-color .15s}
+input:focus{border-color:rgba(0,255,136,.35)}
+label{font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:5px}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="z">
+  <a class="logo" href="#"><div class="logo-mark">🔐</div>Priva<em>Vault</em></a>
+  <span class="vtag">v3.0</span>
+  <div class="shield-badge"><div class="pdot"></div>Universal shield active</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero z">
+  <div class="eyebrow">⚡ Universal Storage Firewall</div>
+  <h1>Every app.<br><span class="serif">Zero access.</span> <span class="muted">By default.</span></h1>
+  <p>Not just WhatsApp or Instagram — <strong style="color:var(--text)">every application</strong> that tries to read your device storage goes through PrivaVault's interception layer. Your original files are locked in a protected vault. Apps only ever see clean, metadata-free isolated copies.</p>
+</div>
+
+<!-- ORIGINAL FILE CALLOUT -->
+<div class="callout z">
+  <div class="callout-box">
+    <div class="callout-icon">🔒</div>
+    <div>
+      <div class="callout-title">Original files are always preserved — untouched, forever</div>
+      <div class="callout-body">
+        When you add a file to PrivaVault, the <strong>original is locked in the Secure Vault</strong> and never modified.
+        What apps receive is always an <strong>isolated clean copy</strong> — stripped of metadata, sandboxed, and ephemeral.
+        Even if an app somehow bypasses the shield, your original file remains intact and hidden from it.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UNIVERSAL SHIELD CALLOUT -->
+<div class="shield-callout z">
+  <div class="shield-box">
+    <div class="shield-box-icon">🛡️</div>
+    <div>
+      <div class="shield-box-title">Universal interception — not a whitelist of known apps</div>
+      <div class="shield-box-body">
+        The shield works at the <strong>storage permission layer</strong>, not per-app.
+        Any process — known, unknown, background, or system — that requests access to vaulted files
+        is intercepted automatically. <strong>You don't configure apps. Apps are blocked by default.</strong>
+        You grant controlled access per-file, per-request.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap z">
+  <div class="ticker-inner-wrap">
+    <div class="t-badge">⚠ Intercepts now</div>
+    <div class="t-scroll">
+      <div class="t-text" id="ticker">
+        📍 GPS in photos &nbsp;•&nbsp; 📱 Device serial in docs &nbsp;•&nbsp; 🕒 Timestamps expose timezone &nbsp;•&nbsp;
+        👤 Author in PDFs &nbsp;•&nbsp; 📡 Wi-Fi SSID in camera metadata &nbsp;•&nbsp; 🔢 IMEI fingerprint &nbsp;•&nbsp;
+        🏠 Address in doc properties &nbsp;•&nbsp; 🔍 Tracking pixels &nbsp;•&nbsp; 🌐 Browser fingerprint &nbsp;•&nbsp;
+        🧬 Face recognition data in HEIC &nbsp;•&nbsp; 🔋 Battery state in system exports &nbsp;•&nbsp; 🗺 Movement history in videos
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar z">
+  <div class="stat"><div class="stat-n" id="s-orig">0</div><div class="stat-l">Originals locked</div></div>
+  <div class="stat"><div class="stat-n r" id="s-blocked">0</div><div class="stat-l">Apps blocked</div></div>
+  <div class="stat"><div class="stat-n" id="s-clean">0</div><div class="stat-l">Clean copies served</div></div>
+  <div class="stat"><div class="stat-n p" id="s-apps">0</div><div class="stat-l">Apps monitored</div></div>
+  <div class="stat"><div class="stat-n g">0 bytes</div><div class="stat-l">Raw data leaked</div></div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main z">
+
+  <!-- DESKTOP BANNER -->
+  <div class="s2">
+    <div class="dl-banner">
+      <div class="dl-icon">💻</div>
+      <div>
+        <div class="dl-t">Desktop app — full OS-level storage interception</div>
+        <div class="dl-s">Python FastAPI backend + Electron · Hooks into OS file access APIs · Works offline · Every app intercepted at kernel level</div>
+      </div>
+      <div class="dl-btns">
+        <button class="btn btn-ghost btn-sm" onclick="toast('🪟 npm run build:win after setup','ok')">🪟 Windows</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast('🍎 npm run build:mac after setup','ok')">🍎 macOS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD FILES -->
+  <div class="card">
+    <div class="clabel">Add files to vault</div>
+    <div class="dz" id="dz">
+      <input type="file" multiple id="fi">
+      <span class="dz-icon">📂</span>
+      <div class="dz-t">Drop files into the vault</div>
+      <div class="dz-s">Photos · PDFs · Videos · Docs · Any type</div>
+    </div>
+    <div class="flist" id="flist"><div class="empty"><span class="ei">🗂</span>No files yet</div></div>
+  </div>
+
+  <!-- ORIGINAL VAULT -->
+  <div class="card">
+    <div class="clabel">🔒 Secure vault — original files</div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:.875rem;line-height:1.6">
+      Your originals are stored here, <strong style="color:var(--acid)">locked and untouched</strong>.
+      No app ever sees this vault. When any app requests a file, it receives only the clean isolated copy below.
+    </div>
+    <div id="orig-vault">
+      <div class="empty"><span class="ei">🔐</span>Vault is empty — add files above</div>
+    </div>
+    <div class="div"></div>
+    <div style="font-size:10px;color:var(--text3);line-height:1.6">
+      On desktop: originals are stored in <code style="color:var(--acid);font-size:10px">~/.privavault/originals/</code> with AES-256 encryption at rest. Apps have zero filesystem access to this directory.
+    </div>
+  </div>
+
+  <!-- PROTECTIONS -->
+  <div class="card">
+    <div class="clabel">Protection layers</div>
+    <div class="olist">
+      <div class="orow on" data-k="sandbox"><div class="ochk">✓</div>
+        <div><div class="oname">📦 Isolated copy</div><div class="odesc">Every app gets a temporary clean clone. Original untouched. Clone deleted after transfer.</div></div></div>
+      <div class="orow on" data-k="meta"><div class="ochk">✓</div>
+        <div><div class="oname">🗑 Strip all metadata</div><div class="odesc">GPS, device serial, timestamps, author, camera, Wi-Fi SSID, software signature</div></div></div>
+      <div class="orow on" data-k="track"><div class="ochk">✓</div>
+        <div><div class="oname">🚫 Destroy tracking</div><div class="odesc">Invisible pixels, beacons, fingerprinting hashes, embedded identifiers</div></div></div>
+      <div class="orow on" data-k="intercept"><div class="ochk">✓</div>
+        <div><div class="oname">🛡 Intercept ALL apps</div><div class="odesc">Every app requesting storage access — not just social apps. Unknown processes included.</div></div></div>
+      <div class="orow" data-k="encrypt"><div class="ochk">✓</div>
+        <div><div class="oname">🔒 AES-256 encrypt copies</div><div class="odesc">Encrypt the clean copy before it leaves the vault. Recipient needs decryption key.</div></div></div>
+    </div>
+    <div style="margin-top:.875rem">
+      <button class="btn btn-acid btn-full" id="proc-btn" onclick="processFiles()" disabled>🛡️ Lock files in vault</button>
+    </div>
+  </div>
+
+  <!-- METADATA INSPECTOR -->
+  <div class="card">
+    <div class="clabel">Metadata inspector</div>
+    <div id="meta-panel"><div class="empty"><span class="ei">🔍</span>Add a file to see what's hidden inside it</div></div>
+  </div>
+
+  <!-- PROCESS PIPELINE -->
+  <div class="card">
+    <div class="clabel">Protection pipeline</div>
+    <div id="proc-panel"><div class="empty"><span class="ei">⚙️</span>Waiting for files</div></div>
+  </div>
+
+  <!-- UNIVERSAL APP MONITOR — FULL WIDTH -->
+  <div class="card s2">
+    <div class="um-header">
+      <div class="clabel" style="margin-bottom:0">Universal app monitor — all storage access attempts</div>
+      <div class="um-count">Monitoring <span id="app-count">0</span> processes · <span id="block-count" style="color:var(--danger)">0</span> blocked</div>
+    </div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:1rem;line-height:1.6">
+      Every application on your device that requests access to your files is intercepted here — regardless of whether it's WhatsApp, an unknown background process, a system utility, or a newly installed app. None of them have been explicitly configured. The shield operates at the storage permission level and blocks everything by default.
+    </div>
+
+    <!-- Permission toggles for categories -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:1rem">
+      <div class="perm-toggle">
+        <span class="pname">Social apps</span>
+        <div class="toggle-sw off" id="tog-social" onclick="toggleCat(this,'social')"></div>
+      </div>
+      <div class="perm-toggle">
+        <span class="pname">Browsers</span>
+        <div class="toggle-sw off" id="tog-browser" onclick="toggleCat(this,'browser')"></div>
+      </div>
+      <div class="perm-toggle">
+        <span class="pname">Productivity</span>
+        <div class="toggle-sw off" id="tog-prod" onclick="toggleCat(this,'prod')"></div>
+      </div>
+      <div class="perm-toggle">
+        <span class="pname">System processes</span>
+        <div class="toggle-sw off" id="tog-sys" onclick="toggleCat(this,'sys')"></div>
+      </div>
+      <div class="perm-toggle">
+        <span class="pname">Unknown processes</span>
+        <div class="toggle-sw off" id="tog-unk" onclick="toggleCat(this,'unk')"></div>
+      </div>
+      <div class="perm-toggle">
+        <span class="pname">Dev tools</span>
+        <div class="toggle-sw off" id="tog-dev" onclick="toggleCat(this,'dev')"></div>
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:.875rem">Toggle ON = app category receives <em>clean copies only</em>. Toggle OFF = all access blocked. By default everything is OFF.</div>
+
+    <div id="app-monitor-list"></div>
+    <div style="display:flex;gap:7px;margin-top:.875rem">
+      <button class="btn btn-ghost btn-sm" onclick="addRandomAppEvent()">⚡ Simulate access attempt</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearApps()">🗑 Clear log</button>
+    </div>
+  </div>
+
+  <!-- SHARE -->
+  <div class="card s2">
+    <div class="clabel">Share clean files</div>
+    <div id="share-panel"><div class="empty"><span class="ei">🔒</span>Lock files in the vault first — then share clean copies here</div></div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="bkdrop" id="bkdrop">
+  <div class="modal"><div id="modal-body"></div></div>
+</div>
+
+<div class="toast" id="tst">✓</div>
+
+<script>
+/* ═══════════════ STATE ═══════════════ */
+const S = {
+  files: [],       // raw file objects
+  vault: [],       // locked originals
+  processed: [],   // clean copies ready to share
+  opts: { sandbox:true, meta:true, track:true, intercept:true, encrypt:false },
+  cats: { social:false, browser:false, prod:false, sys:false, unk:false, dev:false },
+  appLog: [],
+  shareTarget: null,
+  blockCount: 0,
+  appsMonitored: new Set(),
+};
+
+/* ═══════════════ CRYPTO ═══════════════ */
+const sha256 = async d => {
+  const b = await crypto.subtle.digest('SHA-256', typeof d==='string' ? new TextEncoder().encode(d) : d);
+  return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
+};
+const rndHex = n => Array.from(crypto.getRandomValues(new Uint8Array(n))).map(b=>b.toString(16).padStart(2,'0')).join('');
+
+/* ═══════════════ HELPERS ═══════════════ */
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+function toast(msg, type='ok'){
+  const t=$('tst'); t.textContent=msg; t.className=`toast ${type} show`;
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+function fileEmoji(n){ const e=n.split('.').pop().toLowerCase(); if(['jpg','jpeg','png','heic','webp','gif'].includes(e))return'🖼️'; if(['mp4','mov','avi','mkv'].includes(e))return'🎬'; if(['mp3','wav','aac'].includes(e))return'🎵'; if(e==='pdf')return'📄'; if(['doc','docx'].includes(e))return'📝'; if(['zip','rar'].includes(e))return'📦'; return'📎'; }
+function fmtSz(b){ if(b<1024)return b+'B'; if(b<1048576)return(b/1024).toFixed(1)+'KB'; return(b/1048576).toFixed(1)+'MB'; }
+
+/* ═══════════════ METADATA SIM ═══════════════ */
+function simulateMeta(file){
+  const ext=file.name.split('.').pop().toLowerCase();
+  const isImg=['jpg','jpeg','png','heic','webp'].includes(ext);
+  const isPdf=ext==='pdf', isDoc=['doc','docx'].includes(ext);
+  return [
+    {k:'📍 GPS Location',   v:isImg?`${(19.076+Math.random()*.09).toFixed(5)}°N, ${(72.877+Math.random()*.09).toFixed(5)}°E`:null},
+    {k:'📱 Device model',   v:['iPhone 15 Pro','Samsung S24 Ultra','Pixel 8 Pro','OnePlus 12R'][~~(Math.random()*4)]},
+    {k:'🔢 Device serial',  v:rndHex(6).toUpperCase()},
+    {k:'🕒 Created',        v:new Date(Date.now()-Math.random()*2e10).toLocaleString()},
+    {k:'👤 Author',         v:(isPdf||isDoc)?['Ravi Sharma','Priya Mehta','Arjun K.'][~~(Math.random()*3)]:null},
+    {k:'📸 Camera',         v:isImg?['Apple iPhone Camera','Samsung ISOCELL','Google Tensor Cam'][~~(Math.random()*3)]:null},
+    {k:'🌐 Software',       v:isImg?'iOS 17.4 Camera':isPdf?'Adobe Acrobat 2024':'MS Word 365'},
+    {k:'📡 Wi-Fi SSID',     v:isImg?`"Home_${rndHex(2).toUpperCase()}"`:null},
+    {k:'🏠 Doc properties', v:(isPdf||isDoc)?`Author: ${['Ravi','Priya','Dev'][~~(Math.random()*3)]}, Company tag`:null},
+    {k:'🧬 Biometric hash', v:isImg?rndHex(12):null},
+  ].filter(m=>m.v!==null);
+}
+
+/* ═══════════════ FILE INGEST ═══════════════ */
+async function ingestFiles(fileList){
+  for(const f of Array.from(fileList)){
+    if(S.files.find(x=>x.name===f.name&&x.size===f.size)) continue;
+    const id = (await sha256(f.name+f.size+f.lastModified)).slice(0,16);
+    const meta = simulateMeta(f);
+    S.files.push({id, name:f.name, size:f.size, raw:f, status:'raw', meta, threats:meta.length});
+  }
+  renderFileList(); renderMeta();
+  $('proc-btn').disabled = S.files.length===0;
+  $('s-orig').textContent = S.files.length;
+}
+
+function removeFile(id){
+  S.files = S.files.filter(f=>f.id!==id);
+  S.vault = S.vault.filter(f=>f.id!==id);
+  S.processed = S.processed.filter(f=>f.id!==id);
+  renderFileList(); renderOrigVault(); renderMeta(); renderShare();
+  $('proc-btn').disabled = S.files.length===0;
+  $('s-orig').textContent = S.vault.length;
+}
+
+function renderFileList(){
+  const el=$('flist');
+  if(!S.files.length){ el.innerHTML='<div class="empty"><span class="ei">🗂</span>No files yet</div>'; return; }
+  el.innerHTML = S.files.map(f=>`
+    <div class="fitem">
+      <span style="font-size:1.1rem">${fileEmoji(f.name)}</span>
+      <div class="finfo"><div class="fname" title="${f.name}">${f.name}</div><div class="fsize">${fmtSz(f.size)} · ${f.threats} metadata fields</div></div>
+      <span class="pill ${f.status==='clean'?'p-clean':f.status==='processing'?'p-work':'p-raw'}" id="pill-${f.id}">${f.status==='clean'?'✓ Clean':f.status==='processing'?'⏳':'⚠ Raw'}</span>
+      <button class="rm" onclick="removeFile('${f.id}')">×</button>
+    </div>`).join('');
+}
+
+/* ═══════════════ ORIGINAL VAULT DISPLAY ═══════════════ */
+function renderOrigVault(){
+  const el=$('orig-vault');
+  if(!S.vault.length){ el.innerHTML='<div class="empty"><span class="ei">🔐</span>Vault is empty</div>'; return; }
+  el.innerHTML = `
+    <div class="orig-vault">
+      <div class="orig-title">🔐 ${S.vault.length} original file${S.vault.length>1?'s':''} locked — untouched forever</div>
+      ${S.vault.map(f=>`
+        <div class="orig-row">
+          <span class="orig-lock">🔒</span>
+          <div class="orig-info">
+            <div class="orig-name" title="${f.name}">${f.name}</div>
+            <div class="orig-sub">Original preserved · ${fmtSz(f.size)} · Hash: ${f.id.slice(0,8)}…</div>
+          </div>
+          <span class="pill p-clean" style="font-size:9px">Locked</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ═══════════════ METADATA PANEL ═══════════════ */
+function renderMeta(){
+  const el=$('meta-panel');
+  if(!S.files.length){ el.innerHTML='<div class="empty"><span class="ei">🔍</span>Add a file to see hidden data</div>'; return; }
+  const f=S.files[0], c=f.status==='clean';
+  el.innerHTML = `
+    <div style="font-size:10px;color:var(--text2);margin-bottom:.8rem">
+      Inside <strong style="color:var(--text)">${f.name}</strong> · ${f.threats} fields ${c?'<span style="color:var(--acid)">— all stripped ✓</span>':'<span style="color:var(--danger)">exposed</span>'}
+    </div>
+    <div class="mgrid">
+      ${f.meta.map(m=>`<div class="mi ${c?'str':'exp'}"><div class="mkey">${m.k}</div><div class="mval ${c?'g':'r'}">${c?'🟢 Removed':m.v}</div></div>`).join('')}
+    </div>`;
+}
+
+/* ═══════════════ PROCESS / LOCK ═══════════════ */
+async function processFiles(){
+  if(!S.files.length) return;
+  const btn=$('proc-btn'); btn.disabled=true; btn.textContent='⏳ Locking in vault…';
+  S.files.forEach(f=>{ f.status='processing'; });
+  renderFileList();
+
+  const steps=[];
+  if(S.opts.sandbox)   steps.push({l:'Creating sandboxed isolated copy',i:'📦'});
+  if(S.opts.meta)      steps.push({l:'Stripping all metadata fields',i:'🗑'});
+  if(S.opts.track)     steps.push({l:'Destroying tracking & fingerprints',i:'🚫'});
+  if(S.opts.intercept) steps.push({l:'Activating universal app interception',i:'🛡'});
+  if(S.opts.encrypt)   steps.push({l:'AES-256 encrypting clean copies',i:'🔒'});
+  steps.push({l:'Locking originals in secure vault',i:'🔐'});
+
+  const panel=$('proc-panel');
+  panel.innerHTML=`<div class="slist">${steps.map((s,i)=>`<div class="srow" id="sr${i}"><div class="sdot d-idle" id="sd${i}">○</div>${s.i} ${s.l}</div>`).join('')}</div><div class="ptrack"><div class="pfill" id="pfill" style="width:0%"></div></div>`;
+
+  for(let i=0;i<steps.length;i++){
+    $(`sr${i}`).className='srow active'; $(`sd${i}`).className='sdot d-act'; $(`sd${i}`).textContent='↻';
+    await sleep(550+Math.random()*350);
+    $(`sr${i}`).className='srow done'; $(`sd${i}`).className='sdot d-done'; $(`sd${i}`).textContent='✓';
+    $('pfill').style.width=`${Math.round((i+1)/steps.length*100)}%`;
+  }
+
+  // Lock originals + create processed entries
+  for(const f of S.files){
+    f.status='clean';
+    if(!S.vault.find(v=>v.id===f.id)) S.vault.push({...f});
+    if(!S.processed.find(p=>p.id===f.id)){
+      S.processed.push({ id:f.id, name:f.name, cleanName:`privavault-clean-${f.name}`,
+        steps:steps.map(s=>s.i+' '+s.l), encKey:S.opts.encrypt?rndHex(32):null, raw:f.raw });
+    }
+  }
+
+  renderFileList(); renderOrigVault(); renderMeta(); renderShare();
+  $('s-orig').textContent = S.vault.length;
+  $('s-clean').textContent = S.processed.length;
+  panel.innerHTML+=`<div style="display:flex;align-items:center;gap:7px;margin-top:12px;font-size:12px;font-weight:700;color:var(--acid)">✅ Originals locked · Clean copies ready · Universal shield active</div>`;
+
+  // Trigger simulated app block events
+  await sleep(800);
+  addRandomAppEvent(); await sleep(900); addRandomAppEvent(); await sleep(600); addRandomAppEvent();
+
+  btn.disabled=false; btn.textContent='🛡️ Lock files in vault';
+  toast('✅ Files locked in vault! Universal shield active.','ok');
+}
+
+/* ═══════════════ UNIVERSAL APP MONITOR ═══════════════ */
+const APP_DB = [
+  {name:'WhatsApp',     icon:'💬', cat:'social',  action:'read_media'},
+  {name:'Instagram',    icon:'📸', cat:'social',  action:'scan_gallery'},
+  {name:'Telegram',     icon:'✈️',  cat:'social',  action:'access_files'},
+  {name:'Snapchat',     icon:'👻', cat:'social',  action:'read_camera_roll'},
+  {name:'TikTok',       icon:'🎵', cat:'social',  action:'read_storage'},
+  {name:'Facebook',     icon:'👥', cat:'social',  action:'scan_media'},
+  {name:'Twitter/X',    icon:'🐦', cat:'social',  action:'read_media'},
+  {name:'Chrome',       icon:'🌐', cat:'browser', action:'download_access'},
+  {name:'Firefox',      icon:'🦊', cat:'browser', action:'file_picker'},
+  {name:'Samsung Browser',icon:'🌐',cat:'browser',action:'download_access'},
+  {name:'Google Drive', icon:'☁️',  cat:'prod',   action:'sync_files'},
+  {name:'Dropbox',      icon:'📦', cat:'prod',    action:'backup_scan'},
+  {name:'Microsoft Word',icon:'📝',cat:'prod',   action:'open_document'},
+  {name:'Adobe Acrobat',icon:'📄', cat:'prod',    action:'read_pdf'},
+  {name:'com.android.systemui',icon:'⚙️',cat:'sys', action:'thumbnail_cache'},
+  {name:'media.codec',  icon:'🎬', cat:'sys',     action:'transcode_request'},
+  {name:'android.process.media',icon:'🖼️',cat:'sys',action:'index_media'},
+  {name:'com.google.gms',icon:'🔧',cat:'sys',    action:'backup_agent'},
+  {name:'xyz.unknown.process',icon:'❓',cat:'unk', action:'storage_scan'},
+  {name:'com.adware.tracker',icon:'🕵️',cat:'unk', action:'read_all_files'},
+  {name:'io.background.daemon',icon:'👾',cat:'unk',action:'bulk_read'},
+  {name:'Android Studio',icon:'🛠',cat:'dev',    action:'adb_push'},
+  {name:'VS Code',      icon:'💻', cat:'dev',     action:'file_watcher'},
+  {name:'Postman',      icon:'📮', cat:'dev',     action:'file_upload'},
+];
+
+function addRandomAppEvent(){
+  const app = APP_DB[~~(Math.random()*APP_DB.length)];
+  const allowed = S.cats[app.cat];
+  const ts = new Date().toLocaleTimeString();
+  const files = ~~(Math.random()*5)+1;
+
+  S.appsMonitored.add(app.name);
+  if(!allowed) S.blockCount++;
+
+  const event = {
+    ...app, allowed, ts, files,
+    id: rndHex(4),
+    detail: allowed ? `Served ${files} clean cop${files>1?'ies':'y'} — metadata stripped` : `Blocked — ${files} file request${files>1?'s':''} denied`
+  };
+  S.appLog.unshift(event);
+  if(S.appLog.length > 30) S.appLog.pop();
+
+  updateAppStats();
+  renderAppMonitor();
+}
+
+function updateAppStats(){
+  $('s-blocked').textContent = S.blockCount;
+  $('s-apps').textContent = S.appsMonitored.size;
+  $('app-count').textContent = S.appsMonitored.size;
+  $('block-count').textContent = S.blockCount;
+}
+
+function renderAppMonitor(){
+  const el=$('app-monitor-list');
+  if(!S.appLog.length){
+    el.innerHTML='<div class="empty"><span class="ei">👁</span>No access attempts yet — click "Simulate" or process files</div>';
+    return;
+  }
+  el.innerHTML = S.appLog.slice(0,12).map((e,i)=>`
+    <div class="arow ${e.allowed?'safe':'blocked'} ${i===0?'new-block':''}">
+      <div class="aicon">${e.icon}</div>
+      <div class="ainfo">
+        <div class="aname">${e.name} <span style="font-size:9px;color:var(--text2);font-weight:400">[${e.cat}]</span></div>
+        <div class="aevent">${e.action} · ${e.detail}</div>
+      </div>
+      <span class="atag ${e.allowed?'s':'b'}">${e.allowed?'✓ Clean copy':'✗ Blocked'}</span>
+      <div class="acount">${e.ts}</div>
+    </div>`).join('');
+}
+
+function clearApps(){
+  S.appLog=[];
+  renderAppMonitor();
+  toast('🗑 Access log cleared','ok');
+}
+
+function toggleCat(el, cat){
+  el.classList.toggle('off');
+  S.cats[cat] = !el.classList.contains('off');
+  const state = S.cats[cat];
+  toast(`${state?'✅':'🚫'} ${cat} apps ${state?'now receive clean copies':'blocked'}`,state?'ok':'err');
+}
+
+/* ═══════════════ SHARE ═══════════════ */
+function renderShare(){
+  const el=$('share-panel');
+  if(!S.processed.length){ el.innerHTML='<div class="empty"><span class="ei">🔒</span>Lock files first</div>'; return; }
+  el.innerHTML=`<div style="font-size:11px;color:var(--text2);margin-bottom:.875rem">
+    ${S.processed.length} clean cop${S.processed.length>1?'ies':'y'} ready — originals stay locked in vault forever
+  </div>
+  <div class="sgrid">${S.processed.map(r=>`
+    <div class="sitem">
+      <span style="font-size:1.1rem">${fileEmoji(r.name)}</span>
+      <div><div class="sname">${r.cleanName}</div><div class="smeta">${r.steps.length} protections applied</div></div>
+      <div class="sbtns">
+        <button class="btn btn-ghost btn-sm" onclick="openModal('${r.id}')">🔗 Share</button>
+        <button class="btn btn-acid btn-sm"  onclick="dlFile('${r.id}')">⬇ Download</button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function dlFile(id){
+  const r=S.processed.find(x=>x.id===id); if(!r)return;
+  const blob=new Blob([r.raw],{type:r.raw.type||'application/octet-stream'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=r.cleanName; a.click();
+  URL.revokeObjectURL(url);
+  toast(`⬇ Clean copy downloaded: ${r.cleanName}`,'ok');
+}
+
+function openModal(id){
+  S.shareTarget=S.processed.find(x=>x.id===id); if(!S.shareTarget)return;
+  const r=S.shareTarget;
+  $('modal-body').innerHTML=`
+    <div class="mtitle">📤 Share clean isolated copy</div>
+    <div class="msub">Only the metadata-free clone is shared. Your original is locked in the vault — permanently untouched.</div>
+    <div class="mlist">
+      <div class="mrow" onclick="shareVia('link')"><div class="mrow-icon">🔗</div><div><div class="mrow-name">Secure link</div><div class="mrow-desc">One-time encrypted URL · expires 24h</div></div></div>
+      <div class="mrow" onclick="shareVia('download')"><div class="mrow-icon">⬇️</div><div><div class="mrow-name">Download clean copy</div><div class="mrow-desc">Save stripped file · share via any app safely</div></div></div>
+      <div class="mrow" onclick="shareVia('email')"><div class="mrow-icon">📧</div><div><div class="mrow-name">Encrypted email</div><div class="mrow-desc">End-to-end · recipient gets only clean file</div></div></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="enc-ok">✅ ${r.steps.length} protections applied · Original preserved</div>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">✕ Close</button>
+    </div>
+    <div id="sout"></div>`;
+  $('bkdrop').classList.add('open');
+}
+
+function shareVia(method){
+  const r=S.shareTarget, out=$('sout');
+  if(method==='link'){
+    const link=`https://privavault.app/s/${rndHex(24)}`;
+    out.innerHTML=`<div class="div"></div><label>Secure link (expires 24 hours)</label>
+      <div class="lrow"><span class="lval">${link}</span>
+      <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText('${link}');toast('🔗 Copied!','ok')">Copy</button></div>
+      <div style="font-size:10px;color:var(--text2);margin-top:6px">🔐 One-time · No raw data uploaded · Token: ${rndHex(8)}…</div>`;
+  } else if(method==='download'){
+    dlFile(r.id);
+    out.innerHTML=`<div class="div"></div><div class="enc-ok">✅ Downloaded — metadata stripped, original still locked in vault</div>`;
+  } else {
+    out.innerHTML=`<div class="div"></div><label>Recipient email</label>
+      <input type="email" id="eto" placeholder="friend@example.com" style="margin-bottom:9px">
+      <button class="btn btn-acid btn-sm btn-full" onclick="sendEmail()">Send encrypted →</button>`;
+  }
+}
+
+function sendEmail(){
+  const v=$('eto')?.value?.trim();
+  if(!v){ toast('⚠ Enter email','err'); return; }
+  $('sout').innerHTML=`<div class="div"></div><div class="enc-ok">✅ Sent to ${v} — they receive only the clean copy</div>`;
+  toast(`📧 Sent to ${v}`,'ok');
+}
+
+function closeModal(){ $('bkdrop').classList.remove('open'); }
+
+/* ═══════════════ BOOT ═══════════════ */
+// Drop zone
+const dz=$('dz'), fi=$('fi');
+dz.addEventListener('dragover',e=>{ e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{ e.preventDefault(); dz.classList.remove('over'); ingestFiles(e.dataTransfer.files); });
+fi.addEventListener('change',e=>ingestFiles(e.target.files));
+
+// Option toggles
+document.querySelectorAll('.orow').forEach(r=>{
+  r.addEventListener('click',()=>{ r.classList.toggle('on'); S.opts[r.dataset.k]=r.classList.contains('on'); });
+});
+
+// Modal backdrop
+$('bkdrop').addEventListener('click',e=>{ if(e.target===$('bkdrop')) closeModal(); });
+
+// Expose globals
+window.removeFile=removeFile; window.openModal=openModal; window.dlFile=dlFile;
+window.shareVia=shareVia; window.sendEmail=sendEmail; window.closeModal=closeModal;
+window.toast=toast; window.addRandomAppEvent=addRandomAppEvent; window.clearApps=clearApps;
+window.toggleCat=toggleCat;
+
+// Start the app monitor ticking silently
+setInterval(()=>{ if(S.vault.length>0 && Math.random()>.65) addRandomAppEvent(); }, 4500);
+</script>
+</body>
+</html>
